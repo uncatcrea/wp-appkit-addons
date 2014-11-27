@@ -1,0 +1,17 @@
+.wpak-note-box{
+    text-align: center;
+    position: fixed;
+    z-index: 10000;
+    background: #ffffe0;
+    top: 20px;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    border: 2px solid #ccc;
+    padding: 50px 20px;
+    opacity: 0.95;
+}
+
+.wpak-note-box a{
+    padding: 0 1em;
+}
