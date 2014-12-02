@@ -11,8 +11,10 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 
 		const slug = 'wp-appkit-note';
 		const i18n_domain = 'wpak_note_domain';
-		const meta_id = '_wpak_note_settings';
+		const static_settings_meta_id = '_wpak_note_settings';
+		const dynamic_settings_meta_id = '_wpak_note_settings_dynamic';
 
+		
 		public static function hooks() {
 			add_filter( 'wpak_addons', array( __CLASS__, 'wpak_addons' ) );
 			if ( is_admin() ) {
@@ -42,8 +44,10 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 
 			$addon->add_css( 'wpak-note.css' );
 			
-			$addon->add_app_data( array( __CLASS__, 'add_app_data' ) );
+			$addon->add_app_static_data( array( __CLASS__, 'add_app_static_data' ) );
 
+			$addon->add_app_dynamic_data( array( __CLASS__, 'add_app_dynamic_data' ) );
+			
 			$addons[] = $addon;
 
 			return $addons;
@@ -67,19 +71,31 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 		}
 
 		public static function inner_note_box( $post ) {
-			$settings = self::get_settings( $post->ID );
+			$static_settings = self::get_static_settings( $post->ID );
+			$dynamic_settings = self::get_dynamic_settings( $post->ID );
 			?>
 			<label><?php _e( 'Number of app openings before inviting to vote', self::i18n_domain ) ?></label> : <br/>
-			<input type="text" name="nb_openings_before_first_launch" value="<?php echo $settings['nb_openings_before_first_launch'] ?>" />
+			<input type="text" name="nb_openings_before_first_launch" value="<?php echo $static_settings['nb_openings_before_first_launch'] ?>" />
 			<br/><br/>
 			<label><?php _e( 'Number of app openings before asking again when the user choosed to note later', self::i18n_domain ) ?></label> : <br/>
-			<input type="text" name="nb_openings_before_asking_again" value="<?php echo $settings['nb_openings_before_asking_again'] ?>" />
+			<input type="text" name="nb_openings_before_asking_again" value="<?php echo $static_settings['nb_openings_before_asking_again'] ?>" />
+			
+			<br/><br/>
+			<hr/>
+			
+			<?php $campaign_on = intval($dynamic_settings['campaign_on']) ?>
+			<label><?php _e( 'Campaign on', self::i18n_domain ) ?></label> : <br/>
+			<select name="campaign_on" >
+				<option value="1" <?php echo $campaign_on === 1 ? 'selected' : '' ?> ><?php _e( 'Yes', self::i18n_domain ) ?></option>
+				<option value="0" <?php echo $campaign_on === 0 ? 'selected' : '' ?> ><?php _e( 'No', self::i18n_domain ) ?></option>
+			</select>
+			
 			<?php wp_nonce_field( 'wpak-note-settings-' . $post->ID, 'wpak-note-nonce' ) ?>
 			<?php
 		}
 
-		protected static function get_settings( $app_id ) {
-			$settings = get_post_meta( $app_id, self::meta_id, true );
+		protected static function get_static_settings( $app_id ) {
+			$settings = get_post_meta( $app_id, self::static_settings_meta_id, true );
 			$settings = wp_parse_args(
 					$settings, array(
 						'nb_openings_before_first_launch' => 5,
@@ -89,8 +105,22 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 			return $settings;
 		}
 		
-		public static function add_app_data( $app_id ){
-			return self::get_settings( $app_id );
+		public static function add_app_static_data( $app_id ){
+			return self::get_static_settings( $app_id );
+		}
+		
+		protected static function get_dynamic_settings( $app_id ) {
+			$dynamic_settings = get_post_meta( $app_id, self::dynamic_settings_meta_id, true );
+			$dynamic_settings = wp_parse_args(
+					$dynamic_settings, array(
+						'campaign_on' => 1,
+					)
+			);
+			return $dynamic_settings;
+		}
+		
+		public static function add_app_dynamic_data( $app_id ){
+			return self::get_dynamic_settings( $app_id );
 		}
 
 		public static function save_post( $post_id ) {
@@ -115,16 +145,27 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 				return;
 			}
 
-			if ( isset( $_POST['nb_openings_before_first_launch'] ) && isset( $_POST['nb_openings_before_asking_again'] )
-			) {
+			//Static settings :
+			if ( isset( $_POST['nb_openings_before_first_launch'] ) && isset( $_POST['nb_openings_before_asking_again'] ) ) {
 
 				$settings = array(
 					'nb_openings_before_first_launch' => intval( $_POST['nb_openings_before_first_launch'] ),
 					'nb_openings_before_asking_again' => intval( $_POST['nb_openings_before_asking_again'] ),
 				);
 
-				update_post_meta( $post_id, self::meta_id, $settings );
+				update_post_meta( $post_id, self::static_settings_meta_id, $settings );
 			}
+			
+			//Dynamic settings :
+			if ( isset( $_POST['campaign_on'] ) ) {
+
+				$settings = array(
+					'campaign_on' => intval( $_POST['campaign_on'] ),
+				);
+
+				update_post_meta( $post_id, self::dynamic_settings_meta_id, $settings );
+			}
+			
 		}
 
 	}

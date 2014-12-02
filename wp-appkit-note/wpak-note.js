@@ -19,7 +19,7 @@ define( function( require ) {
 		not_ok_to_email: null
 	};
 	
-	var app_data = Addons.getAppData( 'wp-appkit-note' );
+	var app_data = Addons.getAppStaticData( 'wp-appkit-note' );
 	
 	var set_trigger_count = function(trigger_count){
 		LocalStorage.set( 'wpak_note', 'trigger_count', trigger_count );
@@ -68,7 +68,8 @@ define( function( require ) {
 	};
 	
 	wpak_note.canLaunch = function(){
-		return get_count_open() == get_trigger_count() || Flags.isUp('wpak_note_go'); 
+		var campaign_on = Addons.getAppDynamicData('wp-appkit-note','campaign_on');
+		return parseInt(campaign_on) === 1 && ( get_count_open() == get_trigger_count() || Flags.isUp('wpak_note_go') ); 
 	};
 	
 	wpak_note.setOkToGo = function(){
@@ -143,6 +144,7 @@ define( function( require ) {
 	//wpak_note.setState( 'new' );
 	
 	//Debug addon :
+	console.log('Campaign on', Addons.getAppDynamicData('wp-appkit-note','campaign_on'));
 	console.log('wpak note count_open', get_count_open());
 	console.log('wpak note trigger_count', get_trigger_count());
 	console.log('Flag wpak_note_go', Flags.isUp('wpak_note_go'));
