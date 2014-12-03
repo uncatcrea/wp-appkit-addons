@@ -74,14 +74,6 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 			$static_settings = self::get_static_settings( $post->ID );
 			$dynamic_settings = self::get_dynamic_settings( $post->ID );
 			?>
-			<label><?php _e( 'Number of app openings before inviting to vote', self::i18n_domain ) ?></label> : <br/>
-			<input type="text" name="nb_openings_before_first_launch" value="<?php echo $static_settings['nb_openings_before_first_launch'] ?>" />
-			<br/><br/>
-			<label><?php _e( 'Number of app openings before asking again when the user choosed to note later', self::i18n_domain ) ?></label> : <br/>
-			<input type="text" name="nb_openings_before_asking_again" value="<?php echo $static_settings['nb_openings_before_asking_again'] ?>" />
-			
-			<br/><br/>
-			<hr/>
 			
 			<?php $campaign_on = intval($dynamic_settings['campaign_on']) ?>
 			<label><?php _e( 'Campaign on', self::i18n_domain ) ?></label> : <br/>
@@ -89,6 +81,23 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 				<option value="1" <?php echo $campaign_on === 1 ? 'selected' : '' ?> ><?php _e( 'Yes', self::i18n_domain ) ?></option>
 				<option value="0" <?php echo $campaign_on === 0 ? 'selected' : '' ?> ><?php _e( 'No', self::i18n_domain ) ?></option>
 			</select>
+			<br/><br/>
+			
+			<label><?php _e( 'App url in app store', self::i18n_domain ) ?></label> : <br/>
+			<input type="text" name="app_url_in_app_store" value="<?php echo $dynamic_settings['app_url_in_app_store'] ?>" />
+			<br/><br/>
+			
+			<label><?php _e( 'Email for not satisfied users feedback', self::i18n_domain ) ?></label> : <br/>
+			<input type="text" name="email_not_satisfied" value="<?php echo $dynamic_settings['email_not_satisfied'] ?>" />
+			
+			<br/><br/>
+			<hr/>
+			
+			<label><?php _e( 'Number of app openings before inviting to vote', self::i18n_domain ) ?></label> : <br/>
+			<input type="text" name="nb_openings_before_first_launch" value="<?php echo $static_settings['nb_openings_before_first_launch'] ?>" />
+			<br/><br/>
+			<label><?php _e( 'Number of app openings before asking again when the user choosed to note later', self::i18n_domain ) ?></label> : <br/>
+			<input type="text" name="nb_openings_before_asking_again" value="<?php echo $static_settings['nb_openings_before_asking_again'] ?>" />
 			
 			<?php wp_nonce_field( 'wpak-note-settings-' . $post->ID, 'wpak-note-nonce' ) ?>
 			<?php
@@ -114,6 +123,8 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 			$dynamic_settings = wp_parse_args(
 					$dynamic_settings, array(
 						'campaign_on' => 1,
+						'app_url_in_app_store' => '',
+						'email_not_satisfied' => ''
 					)
 			);
 			return $dynamic_settings;
@@ -157,10 +168,12 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 			}
 			
 			//Dynamic settings :
-			if ( isset( $_POST['campaign_on'] ) ) {
+			if ( isset( $_POST['campaign_on'] ) && isset( $_POST['app_url_in_app_store'] ) && isset( $_POST['email_not_satisfied'] ) ) {
 
 				$settings = array(
 					'campaign_on' => intval( $_POST['campaign_on'] ),
+					'app_url_in_app_store' => esc_url( $_POST['app_url_in_app_store'] ),
+					'email_not_satisfied' => sanitize_email( $_POST['email_not_satisfied'] )
 				);
 
 				update_post_meta( $post_id, self::dynamic_settings_meta_id, $settings );

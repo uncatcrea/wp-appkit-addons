@@ -19,14 +19,15 @@ define( function( require ) {
 		not_ok_to_email: null
 	};
 	
-	var app_data = Addons.getAppStaticData( 'wp-appkit-note' );
+	var app_static_data = Addons.getAppStaticData( 'wp-appkit-note' );
+	var app_dynamic_data = Addons.getAppDynamicData('wp-appkit-note' );
 	
 	var set_trigger_count = function(trigger_count){
 		LocalStorage.set( 'wpak_note', 'trigger_count', trigger_count );
 	};
 	
 	var get_trigger_count = function(){
-		return LocalStorage.get( 'wpak_note', 'trigger_count', app_data.nb_openings_before_first_launch );
+		return LocalStorage.get( 'wpak_note', 'trigger_count', app_static_data.nb_openings_before_first_launch );
 	};
 	
 	var set_count_open = function(count_open){
@@ -55,7 +56,7 @@ define( function( require ) {
 	
 	wpak_note.launchIfNeeded = function(){
 		
-		if( wpak_note.getState() !== 'finished' ){
+		if( wpak_note.getState().indexOf('finished') === -1 ){
 			
 			wpak_note.incrementCountOpen();
 
@@ -68,8 +69,16 @@ define( function( require ) {
 	};
 	
 	wpak_note.canLaunch = function(){
-		var campaign_on = Addons.getAppDynamicData('wp-appkit-note','campaign_on');
-		return parseInt(campaign_on) === 1 && ( get_count_open() == get_trigger_count() || Flags.isUp('wpak_note_go') ); 
+		if( app_dynamic_data.email_not_satisfied === '' ){
+			Utils.log('WPAK Note error : please set an email for not satisfied users');
+		}
+		if( app_dynamic_data.app_url_in_app_store === '' ){
+			Utils.log('WPAK Note error : please set the app store\'s app url');
+		}
+		return parseInt(app_dynamic_data.campaign_on) === 1 
+				&& app_dynamic_data.email_not_satisfied !== ''
+				&& app_dynamic_data.app_url_in_app_store !== ''
+				&& ( get_count_open() == get_trigger_count() || Flags.isUp('wpak_note_go') ); 
 	};
 	
 	wpak_note.setOkToGo = function(){
@@ -94,7 +103,7 @@ define( function( require ) {
 		}else if( answer == 'later' ){
 			wpak_note.setState('later');
 			Flags.lower('wpak_note_go');
-			set_trigger_count(app_data.nb_openings_before_asking_again);
+			set_trigger_count(app_static_data.nb_openings_before_asking_again);
 			set_count_open(0);
 			actions_callbacks.answer_to_first_box_later();
 		}else if( answer == 'dont_ask_again' ){
@@ -108,8 +117,8 @@ define( function( require ) {
 		if( answer == 'yes' ){
 			wpak_note.setState('finished:satisfied:note-yes');
 			Flags.lower('wpak_note_go');
-			alert("Open vote url in the InApp Browser!"); //TODO
 			actions_callbacks.ok_to_vote();
+			document.location.href = app_dynamic_data.app_url_in_app_store;
 		}else if( answer == 'no' ){
 			wpak_note.setState('finished:satisfied:note-no');
 			Flags.lower('wpak_note_go');
@@ -121,8 +130,8 @@ define( function( require ) {
 		if( answer == 'yes' ){
 			wpak_note.setState('finished:not-satisfied:mail-yes');
 			Flags.lower('wpak_note_go');
-			alert("Open email"); //TODO
 			actions_callbacks.ok_to_email();
+			document.location.href = "mailto:"+ app_dynamic_data.email_not_satisfied;
 		}else if( answer == 'no' ){
 			wpak_note.setState('finished:not-satisfied:mail-no');
 			Flags.lower('wpak_note_go');
