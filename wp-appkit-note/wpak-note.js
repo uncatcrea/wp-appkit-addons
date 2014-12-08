@@ -22,6 +22,8 @@ define( function( require ) {
 	var app_static_data = Addons.getAppStaticData( 'wp-appkit-note' );
 	var app_dynamic_data = Addons.getAppDynamicData('wp-appkit-note' );
 	
+	var tried_to_launch = false; //Used to avoid calling incrementCountOpen() twice in launchIfNeeded().
+	
 	var set_trigger_count = function(trigger_count){
 		LocalStorage.set( 'wpak_note', 'trigger_count', trigger_count );
 	};
@@ -56,7 +58,9 @@ define( function( require ) {
 	
 	wpak_note.launchIfNeeded = function(){
 		
-		if( wpak_note.getState().indexOf('finished') === -1 ){
+		if( wpak_note.getState().indexOf('finished') === -1 && !tried_to_launch ){
+			
+			tried_to_launch = true;
 			
 			wpak_note.incrementCountOpen();
 
