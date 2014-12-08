@@ -38,7 +38,8 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 					'tell_problems' => __( "Do you want to share your problems with us?" ),
 					'yes' => __( "Yes" ),
 					'no' => __( "No" ),
-					'later' => __( "Later" )
+					'later' => __( "Later" ),
+					'dont_ask_again' => __( "Don't ask again")
 				)
 			) );
 
