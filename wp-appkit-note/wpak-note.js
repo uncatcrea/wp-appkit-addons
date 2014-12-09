@@ -18,7 +18,8 @@ define( function( require ) {
 		ok_to_vote: null,
 		not_ok_to_vote: null,
 		ok_to_email: null,
-		not_ok_to_email: null
+		not_ok_to_email: null,
+		closed_box: null
 	};
 	
 	var app_static_data = Addons.getAppStaticData( 'wp-appkit-note' );
@@ -127,12 +128,11 @@ define( function( require ) {
 	};
 	
 	wpak_note.launch = function(){
-		if( Phonegap.getNetworkState() === 'online' ){
-			Utils.log('WPAK Note : display first box');
+		if( Phonegap.getNetworkState() === 'offline' ){
 			wpak_note.setState('first-box');
 			actions_callbacks.display_first_box();
 		}else{
-			Utils.log('WPAK Note : did not display first box because the app is offline! Will retry later');
+			Utils.log('WP AppKit Note : did not display first box because the app is offline! Will retry later');
 		}
 	};
 	
@@ -180,6 +180,11 @@ define( function( require ) {
 		}
 	};
 	
+	wpak_note.closeBox = function(){
+		wpak_note.setState('finished:closed-box');
+		actions_callbacks.closed_box();
+	};
+	
 	wpak_note.getState = function(){
 		return LocalStorage.get('wpak_note','state','new');
 	};
@@ -192,13 +197,14 @@ define( function( require ) {
 		LocalStorage.clear( 'wpak_note', 'count_open' );
 		LocalStorage.clear( 'wpak_note', 'trigger_count' );
 		wpak_note.setState( 'new' );
+		Flags.lower('wpak_note_go');
 		if( event !== undefined 
 			&& event.hasOwnProperty('data') 
 			&& event.data.hasOwnProperty('callback') ){
 			event.data.callback();
 		}
 	};
-	
+		
 	return wpak_note;
 } );
 

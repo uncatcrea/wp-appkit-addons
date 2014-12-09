@@ -13,5 +13,15 @@
 }
 
 .wpak-note-box a{
-    padding: 0 1em;
+    padding: 0 6px;
+}
+
+.wpak-note-box p{
+    margin-bottom: 28px;
+}
+
+.wpak-note-box .wpak-note-close{
+    position: absolute;
+    top: 0;
+    right: 0;
 }

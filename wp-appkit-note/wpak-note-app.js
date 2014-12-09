@@ -33,6 +33,11 @@ define( [ 'jquery', 'core/theme-app', 'addons/wp-appkit-note/wpak-note' ], funct
 		},
 		not_ok_to_email: function(){
 			$not_satisfied_box.hide();
+		},
+		closed_box: function(){
+			$first_box.hide();
+			$satisfied_box.hide();
+			$not_satisfied_box.hide();
 		}
 	});
 
@@ -81,6 +86,12 @@ define( [ 'jquery', 'core/theme-app', 'addons/wp-appkit-note/wpak-note' ], funct
 		e.preventDefault();
 		WpakNote.answerToNotSatisfiedBox('no');
 	});
+	
+	$('a.wpak-note-close').click(function(e){
+		e.preventDefault();
+		WpakNote.closeBox();
+	});
+	
 } );
 
 

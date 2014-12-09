@@ -39,7 +39,8 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 					'yes' => __( "Yes" ),
 					'no' => __( "No" ),
 					'later' => __( "Later" ),
-					'dont_ask_again' => __( "Don't ask again")
+					'dont_ask_again' => __( "Don't ask again"),
+					'close' => __( "Close" )
 				)
 			) );
 			
