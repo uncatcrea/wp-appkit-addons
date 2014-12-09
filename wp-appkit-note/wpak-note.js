@@ -1,11 +1,13 @@
 define( function( require ) {
 
-	var _ = require( 'underscore' ),
+	var $ = require('jquery'),
+		_ = require( 'underscore' ),
 		Phonegap = require( 'core/phonegap-utils' ),
 		Utils = require( 'core/app-utils' ),
 		Addons = require( 'core/addons' ),
 		Flags = require( 'core/modules/flags' ),
-		LocalStorage = require( 'core/modules/persistent-storage' );
+		LocalStorage = require( 'core/modules/persistent-storage' ),
+		Hooks = require('core/lib/hooks');
 	
 	var actions_callbacks = {
 		display_first_box: null,
@@ -39,6 +41,41 @@ define( function( require ) {
 	var get_count_open = function(){
 		return LocalStorage.get( 'wpak_note', 'count_open', 0 );
 	};
+	
+	Hooks.addAction('debug-panel-render', function(debug_panel_view){
+		
+		$( "#wpak-note-reset-data" ).on( 
+			"touchend", 
+			{
+				callback: function(){
+					debug_panel_view.displayFeedback('WP AppKit Note addon data successfully reset');
+				}
+			}, 
+			wpak_note.resetData 
+		);
+
+		$( "#wpak-note-view-data" ).on( 
+			"touchend", 
+			function(){
+				var message = 'WP AppKit Note addon data : <br/>';
+				message += 'Campaign on : '+ Addons.getAppDynamicData('wp-appkit-note','campaign_on') +'<br/>';
+				message += 'count_open : '+ get_count_open() +'<br/>';
+				message += 'trigger_count : '+ get_trigger_count() +'<br/>';
+				message += 'Flag wpak_note_go : '+ Flags.isUp('wpak_note_go') +'<br/>';
+				message += 'State : '+ wpak_note.getState() +'<br/>';
+
+				debug_panel_view.displayFeedback(message,'',10000);
+
+				Utils.log('WP AppKit Note addon data :');
+				Utils.log('Campaign on', Addons.getAppDynamicData('wp-appkit-note','campaign_on'));
+				Utils.log('wpak note count_open', get_count_open());
+				Utils.log('wpak note trigger_count', get_trigger_count());
+				Utils.log('Flag wpak_note_go', Flags.isUp('wpak_note_go'));
+				Utils.log('State', wpak_note.getState());
+			}
+		);
+
+	});
 	
 	var wpak_note = {};
 	
@@ -151,17 +188,16 @@ define( function( require ) {
 		LocalStorage.set('wpak_note','state',state);
 	};
 	
-	//Reset addon : 
-	//LocalStorage.clear( 'wpak_note', 'count_open');
-	//LocalStorage.clear( 'wpak_note', 'trigger_count');
-	//wpak_note.setState( 'new' );
-	
-	//Debug addon :
-	console.log('Campaign on', Addons.getAppDynamicData('wp-appkit-note','campaign_on'));
-	console.log('wpak note count_open', get_count_open());
-	console.log('wpak note trigger_count', get_trigger_count());
-	console.log('Flag wpak_note_go', Flags.isUp('wpak_note_go'));
-	console.log('State', wpak_note.getState());
+	wpak_note.resetData = function(event){
+		LocalStorage.clear( 'wpak_note', 'count_open' );
+		LocalStorage.clear( 'wpak_note', 'trigger_count' );
+		wpak_note.setState( 'new' );
+		if( event !== undefined 
+			&& event.hasOwnProperty('data') 
+			&& event.data.hasOwnProperty('callback') ){
+			event.data.callback();
+		}
+	};
 	
 	return wpak_note;
 } );

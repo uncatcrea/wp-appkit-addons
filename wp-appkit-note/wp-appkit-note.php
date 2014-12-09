@@ -42,7 +42,14 @@ if ( !class_exists( 'WpAppKitNote' ) ) {
 					'dont_ask_again' => __( "Don't ask again")
 				)
 			) );
-
+			
+			$addon->add_html( 'wpak-note-debug-panel.html', 'debug_panel', 'after', array(
+				'messages' => array(
+					'reset_data_label' => __( "WP AppKit Note addon : Reset data" ),
+					'view_data_label' => __( "WP AppKit Note addon : View data" ),
+				)
+			) );
+			
 			$addon->add_css( 'wpak-note.css' );
 			
 			$addon->add_app_static_data( array( __CLASS__, 'add_app_static_data' ) );
