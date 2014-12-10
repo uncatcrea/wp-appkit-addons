@@ -132,7 +132,7 @@ define( function( require ) {
 	};
 	
 	wpak_note.launch = function(){
-		if( Phonegap.getNetworkState() === 'offline' ){
+		if( Phonegap.getNetworkState() === 'online' ){
 			wpak_note.setState('first-box');
 			actions_callbacks.display_first_box();
 		}else{
