@@ -64,6 +64,8 @@ define( function( require ) {
 				message += 'trigger_count : '+ get_trigger_count() +'<br/>';
 				message += 'Flag wpak_note_go : '+ Flags.isUp('wpak_note_go') +'<br/>';
 				message += 'State : '+ wpak_note.getState() +'<br/>';
+				message += 'Email not satisfied : '+ app_dynamic_data.email_not_satisfied +'<br/>';
+				message += 'App store URL : '+ app_dynamic_data.app_url_in_app_store +'<br/>';
 
 				debug_panel_view.displayFeedback(message,'',10000);
 
@@ -73,6 +75,8 @@ define( function( require ) {
 				Utils.log('wpak note trigger_count', get_trigger_count());
 				Utils.log('Flag wpak_note_go', Flags.isUp('wpak_note_go'));
 				Utils.log('State', wpak_note.getState());
+				Utils.log('Email not satisfied', app_dynamic_data.email_not_satisfied);
+				Utils.log('App store URL', app_dynamic_data.app_url_in_app_store);
 			}
 		);
 
