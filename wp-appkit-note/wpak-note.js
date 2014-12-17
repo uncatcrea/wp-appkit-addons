@@ -100,7 +100,10 @@ define( function( require ) {
 	
 	wpak_note.launchIfNeeded = function(){
 		
-		if( wpak_note.getState().indexOf('finished') === -1 && !tried_to_launch ){
+		if( wpak_note.getState().indexOf('finished') === -1 
+			&& parseInt(app_dynamic_data.campaign_on) === 1	
+			&& !tried_to_launch 
+			){
 			
 			tried_to_launch = true;
 			
