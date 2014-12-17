@@ -189,6 +189,7 @@ define( function( require ) {
 	
 	wpak_note.closeBox = function(){
 		wpak_note.setState('finished:closed-box');
+		Flags.lower('wpak_note_go');
 		actions_callbacks.closed_box();
 	};
 	
