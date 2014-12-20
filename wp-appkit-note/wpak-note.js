@@ -166,7 +166,7 @@ define( function( require ) {
 			wpak_note.setState('finished:satisfied:note-yes');
 			Flags.lower('wpak_note_go');
 			actions_callbacks.ok_to_vote();
-			document.location.href = app_dynamic_data.app_url_in_app_store;
+			window.open( app_dynamic_data.app_url_in_app_store, "_blank", "location=yes" );
 		}else if( answer == 'no' ){
 			wpak_note.setState('finished:satisfied:note-no');
 			Flags.lower('wpak_note_go');
