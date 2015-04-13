@@ -54,6 +54,9 @@ class WpakSearch {
 											$service_answer['items_ids'][] = $k;
 										}
 									}
+									
+									$service_answer['items_ids'] = array_values( array_unique( $service_answer['items_ids'] ) );
+
 									if( isset($component_data['component']['data']['total']) ) {
 										$service_answer['totals']['components'][$component_slug] = $component_data['component']['data']['total'];
 									}
@@ -174,6 +177,8 @@ class WpakSearch {
 				$service_answer['items_ids'][] = $post->ID;
 			}
 		}
+		
+		$service_answer['items_ids'] = array_values( array_unique( $service_answer['items_ids'] ) );
 		
 		$service_answer['globals']['search-results'] = $posts_by_ids;
 		
