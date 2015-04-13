@@ -72,7 +72,7 @@ define( function( require ) {
 
 		//If no component provided and no custom search query option set, get all posts-list components :
 		if ( ( search_string != '' && !tax_query.length && post_type === '' ) || components_slugs == 'wpak-all-components' ) {
-			components_slugs = _.map( App.getComponents( { type: 'posts-list' } ), function( model ) { return model.get('id'); } );
+			components_slugs = _.map( App.getNavigationComponents( { type: 'posts-list' } ), function( component ) { return component.get('id'); } );
 		}
 		
 		var live_query_args = {
