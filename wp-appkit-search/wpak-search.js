@@ -54,6 +54,9 @@ define( function( require ) {
 	
 	WpakSearch.search = function( options ) {
 		
+		current_search.string = '';
+		current_search.total = 0;
+		
 		var search_string = options.string ? options.string : '';
 		
 		//Search by component : 
@@ -67,9 +70,6 @@ define( function( require ) {
 
 		var redirect_after_search = !options.hasOwnProperty('redirect_after_search') || options.redirect_after_search === true;
 
-		current_search.string = search_string;
-		current_search.total = 0;
-		
 		//If no component provided and no custom search query option set, get all posts-list components :
 		if ( ( search_string != '' && !tax_query.length && post_type === '' ) || components_slugs == 'wpak-all-components' ) {
 			components_slugs = _.map( App.getComponents( { type: 'posts-list' } ), function( model ) { return model.get('id'); } );
@@ -81,6 +81,7 @@ define( function( require ) {
 		
 		if ( search_string != '' ) {
 			live_query_args.wpak_search_s = search_string;
+			current_search.string = search_string;
 		}
 		
 		if ( components_slugs.length ) {
