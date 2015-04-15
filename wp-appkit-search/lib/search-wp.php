@@ -109,14 +109,25 @@ class WpakSearch {
 				
 				if ( !empty( $query_params['wpak_search_post_type'] ) ) {
 					$query_args['post_type'] = $query_params['wpak_search_post_type'];
+				} else {
+					$query_args['post_type'] = 'post'; //Or WP searches also in 'pages' and 'attachments'
+				}
+				
+				if ( !empty( $query_params['wpak_search_orderby'] ) ) {
+					//Note : when 's' arg is provided, default WP ordering is : 
+					// ORDER BY wp_posts.post_title LIKE '%search_string%' DESC, wp_posts.post_date DESC 
+					$query_args['orderby'] = $query_params['wpak_search_orderby'];
 				}
 				
 				if ( !empty( $query_params['wpak_search_order'] ) ) {
 					$query_args['order'] = $query_params['wpak_search_order'];
 				}
 				
-				if ( !empty( $query_params['wpak_search_orderby'] ) ) {
-					$query_args['orderby'] = $query_params['wpak_search_orderby'];
+				if ( !empty( $query_params['wpak_search_page'] ) 
+					 && is_numeric( $query_params['wpak_search_page'] ) 
+					 && intval( $query_params['wpak_search_page'] ) > 1
+					) {
+					$query_args['paged'] = $query_params['wpak_search_page'];
 				}
 				
 				$service_answer = self::wp_query_search( $query_args, $query_params );
