@@ -2,7 +2,7 @@ define( function( require ) {
 
 	var $ = require('jquery'),
 		_ = require( 'underscore' ),
-		Phonegap = require( 'core/phonegap-utils' ),
+		Phonegap = require( 'core/phonegap/utils' ),
 		Utils = require( 'core/app-utils' ),
 		Addons = require( 'core/addons' ),
 		Flags = require( 'core/modules/flags' ),
